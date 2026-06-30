@@ -15,6 +15,12 @@ tensores volumétricos en 3D."
 """
 
 import numpy as np
+from src.tensor_experimental import (
+    inicializar_espacio_voxels, 
+    evaluar_tensor_cauchy_3d, 
+    regularizador_ritmo_y_cronologia,
+    bosquejo_conexion_semantica_24d
+)
 from src.simulador import simular_impacto_anisotropico
 from src.verificador import verificar_limite_ruptura, verificar_invariante_estetico_loomis
 
@@ -56,17 +62,17 @@ def ejecutar_orquestacion():
     )
     
     # -------------------------------------------------------------------------
-    # 3. VEREDICTO DE CONSERVACIÓN CORESIVA (P_total = P_struct ∧ P_aesthetic)
+    # 3. VEREDICTO DE CONSERVACIÓN COHESIVA (P_total = P_struct ∧ P_aesthetic)
     # -------------------------------------------------------------------------
     print("\n" + "="*60)
-    print("      INFORME FINAL DE LOGICA DE VERIFICACIÓN FORMAL      ")
+    print("      INFORME FINAL DE LÓGICA DE VERIFICACIÓN FORMAL      ")
     print("="*60)
     print(f"P_struct    (Física)   : {res_material['dictamen']}")
     print(f"P_aesthetic (Estética)  : {res_estetica['dictamen']}")
     
     # Composición estricta del punto fijo
     if not res_material["se_destruye"] and res_estetica["armonioso"]:
-        print("\n[DICTAMEN DE PRODUCCIÓN ROBÓTICA] SUCCESFUL: ARCHIVO AUTORIZADO PARA FRESADO")
+        print("\n[DICTAMEN DE PRODUCCIÓN ROBÓTICA] SUCCESSFUL: ARCHIVO AUTORIZADO PARA FRESADO")
     else:
         print("\n[DICTAMEN DE PRODUCCIÓN ROBÓTICA] REJECTED: EL DOCUMENTO VIOLA LOS INVARIANTES SAGRADOS")
         if len(res_estetica["detalles_abstraccion"]) > 0:
@@ -75,5 +81,60 @@ def ejecutar_orquestacion():
                 print(f" - {err}")
     print("="*60 + "\n")
 
+    # -------------------------------------------------------------------------
+    # 4. PIPELINE EXPERIMENTAL VOLUMÉTRICO (Futuro Trabajo - Sección 5)
+    # -------------------------------------------------------------------------
+    print("\n[PROTOTIPO TRIDIMENSIONAL] Evaluando extensiones futuras de la Sección 5...")
+    espacio_3d = inicializar_espacio_voxels(resolucion=(10, 10, 10)) # Malla compacta para pruebas rápidas
+    tensores_calculados = evaluar_tensor_cauchy_3d(espacio_3d, punto_impacto=(0, 5, 5), fuerza=100, vector_grano_3d=[1, 1, 1])
+    
+    # Simular línea de acción de una pose con contrapposto (Matriz de posiciones x, y) para el prior de ritmo
+    linea_accion_simulada = np.array([[0, 0], [1, 2], [2, 5], [3, 9], [4, 14]])
+    loss_ritmo = regularizador_ritmo_y_cronologia(grafo_loomis=None, edad_tau=0.75, matriz_linea_accion=linea_accion_simulada)
+    print("="*60 + "\n")
+
 if __name__ == "__main__":
     ejecutar_orquestacion()
+
+# -------------------------------------------------------------------------
+    # 4. PIPELINE EXPERIMENTAL VOLUMÉTRICO (Futuro Trabajo - Sección 7)
+    # -------------------------------------------------------------------------
+    print("\n" + "="*60)
+    print("[PROTOTIPO TRIDIMENSIONAL] Evaluando extensiones futuras de la Sección 7...")
+    print("="*60)
+    
+    # 1. Instanciacion del espacio de Voxels 3D y evaluacion del tensor simetrico de Cauchy
+    espacio_3d = inicializar_espacio_voxels(resolucion=(8, 8, 8)) # Matriz reducida para pruebas veloces
+    tensores_calculados = evaluar_tensor_cauchy_3d(
+        espacio_tensores=espacio_3d, 
+        punto_impacto=(0, 4, 4), 
+        fuerza=250, 
+        vector_grano_3d=[1, 1, 0] # Direccion cristalina oblicua
+    )
+    
+    # 2. Definicion de una Linea de Accion compleja en 3D (Curva Helicoidal con contrapposto)
+    # Matriz N x 3 (puntos espaciales simulan la columna vertebral del maniqui)
+    theta = np.linspace(0, np.pi, 6)
+    columna_vertebral_3d = np.stack([
+        np.sin(theta),          # Movimiento lateral organico
+        np.cos(theta),          # Tension de masa esqueletica
+        np.linspace(0, 10, 6)   # Altura normalizada del cuerpo
+    ], axis=1)
+    
+    # 3. Computo del Regularizador de Ritmo basado en Geometria Diferencial (Frenet-Serret)
+    l_gesture, escala = regularizador_ritmo_y_cronologia(
+        grafo_loomis=None, 
+        edad_tau=0.85, # Equivalente a un adulto joven en el espacio latente cronologico
+        matriz_linea_accion=columna_vertebral_3d
+    )
+    
+    # 4. Evaluacion semantica del hiper-dominio poliedrico de 24 Dimensiones
+    dictamen_formal_24d = bosquejo_conexion_semantica_24d(
+        espacio_tensores=tensores_calculados, 
+        l_gesture=l_gesture, 
+        limites_loomis_abstractos=None
+    )
+    
+    print("\n" + "="*60)
+    print(f"[PIPELINE VOLUMÉTRICO COMPLETADO] Estado de Verificacion 24D: {dictamen_formal_24d}")
+    print("="*60 + "\n")
